@@ -389,6 +389,13 @@ struct aiScene
 
     //! Returns an embedded texture
     const aiTexture* GetEmbeddedTexture(const char* filename) const {
+        if ('*' == *filename) {
+            //fails in the case the texture file name really starts with a *
+            int index = std::atoi(filename + 1);
+            if (0 > index || mNumTextures <= static_cast<unsigned>(index))
+                return nullptr;
+            return mTextures[index];
+        }
         const char* shortFilename = GetShortFilename(filename);
         for (unsigned int i = 0; i < mNumTextures; i++) {
             const char* shortTextureFilename = GetShortFilename(mTextures[i]->mFilename.C_Str());
